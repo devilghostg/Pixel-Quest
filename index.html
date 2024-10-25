@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Quest</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Pixel Quest</h1>
+    </header>
+
+    <main>
+        <!-- Formulaire pour entrer le nom du joueur -->
+        <form action="db.php" method="POST">
+            <input type="text" name="nom" placeholder="Entrez votre nom" required>
+            <button type="submit">Commencer</button>
+        </form>
+
+        <!-- Zone de jeu -->
+        <div id="game"></div>
+    </main>
+
+    <script src="game.js"></script>
+</body>
+</html>

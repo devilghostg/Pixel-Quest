@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+  }
+  #game {
+    width: 400px;
+    height: 400px;
+    background-color: #dcdcdc;
+    position: relative;
+  }
+  .player, .enemy {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+  }
+  .player { background-color: green; }
+  .enemy { background-color: red; }
