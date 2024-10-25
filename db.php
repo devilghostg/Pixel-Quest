@@ -10,12 +10,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nom = $_POST['nom'];
     $tempsDeSurvie = $_POST['temps']; 
 
-    // Préparation de la requête d'insertion
-    $stmt = $conn->prepare("INSERT INTO joueurs (nom, niveau, vie, xp, inventaire, temps_de_survie) VALUES (?, 1, 100, 0, '', ?)");
-    $stmt->execute([$nom, $tempsDeSurvie]); // Insertion des valeurs
+    $stmt = $conn->prepare("INSERT INTO joueurs (nom, niveau, vie, temps_de_jeu) VALUES (?, 1, 100, ?)");
+    $stmt->execute([$nom, $tempsDeSurvie]); 
 
-    // Redirection vers la page d'accueil ou une autre page
     header('Location: game.html');
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $time = $data['time'];
+
+    session_start();
+    $playerId = $_SESSION['player_id'];
+
+    $stmt = $conn->prepare("UPDATE joueurs SET temps_de_jeu = temps_de_jeu + ? WHERE id = ?");
+    $stmt->execute([$xp, $time, $playerId]);
+
+    echo json_encode(['status' => 'success']);
     exit();
 }
 ?>

@@ -49,3 +49,14 @@ th, td {
 .button:hover {
     background: #85D932;
 }
+form{
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+form > input{
+    border: none;
+    margin: 5% 0;
+    border-bottom: 2px solid black;
+}

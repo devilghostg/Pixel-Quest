@@ -8,7 +8,7 @@ $password = 'root';
 $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
 
 
-$scores = $conn->query("SELECT nom, niveau, vie, xp, inventaire FROM joueurs ORDER BY xp DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
+$scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -22,17 +22,14 @@ $scores = $conn->query("SELECT nom, niveau, vie, xp, inventaire FROM joueurs ORD
     <div class="container">
         <h1>Bienvenue dans le RPG !</h1>
 
-        <!-- Formulaire de personnalisation du joueur -->
         <div class="personalization">
             <h2>Personnalisez votre personnage</h2>
             <form id="playerForm" method="POST" action="save_player.php">
-                <label for="nom">Nom du joueur :</label>
-                <input type="text" id="nom" name="nom" required>
+                <input type="text" placeholder="Entrz votre speudo" id="nom" name="nom" required>
                 <button type="submit">Sauvegarder</button>
             </form>
         </div>
 
-        <!-- Tableau de scores -->
         <div class="scoreboard">
             <h2>Tableau des Scores</h2>
             <table>
@@ -40,8 +37,6 @@ $scores = $conn->query("SELECT nom, niveau, vie, xp, inventaire FROM joueurs ORD
                     <tr>
                         <th>Nom</th>
                         <th>Vie</th>
-                        <th>XP</th>
-                        <th>Actions</th> <!-- Ajoutez une colonne pour les actions -->
                     </tr>
                 </thead>
                 <tbody>
@@ -49,7 +44,6 @@ $scores = $conn->query("SELECT nom, niveau, vie, xp, inventaire FROM joueurs ORD
                     <tr>
                         <td><?php echo htmlspecialchars($score['nom']); ?></td>
                         <td><?php echo htmlspecialchars($score['vie']); ?></td>
-                        <td><?php echo htmlspecialchars($score['xp']); ?></td>
                         <td>
                             <!-- Bouton de suppression -->
                             <form method="POST" action="delete_user.php" style="display:inline;">

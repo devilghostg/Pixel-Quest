@@ -35,8 +35,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let playerPosition = { x: randomPlayerX, y: randomPlayerY };
     let playerHealth = 100;
-    let survivalTime = 0; // Pour suivre le temps de survie
-    let gameOver = false; // Pour indiquer que le jeu est terminé
+    let survivalTime = 0; 
+    let gameOver = false; 
 
     function updateHealthBar(character, health) {
         character.healthBar.style.width = health * 0.3 + 'px';
@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
     function moveEnemies() {
         const enemySpeed = 1; 
     
@@ -112,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     playerHealth -= 0.4;
                     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
                     if (playerHealth <= 0) {
-                        gameOver = true; // Indiquer que le jeu est terminé
-                        gameOverScreen(); // Afficher l'écran de fin de jeu
+                        gameOver = true; 
+                        gameOverScreen(); 
                     }
                 }
             }
@@ -168,7 +169,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updateScoreboard(); // Met à jour le tableau des scores après la fin du jeu
     }
+        // Fonction pour envoyer les données de jeu au serveur
+        function sendGameData(time, xp) {
+            fetch('update_game_data.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ time: time, xp: xp }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Données de jeu mises à jour:', data);
+            })
+            .catch((error) => {
+                console.error('Erreur lors de la mise à jour des données de jeu:', error);
+            });
+        }
 
     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-    gameLoop(); // Démarre la boucle de jeu
+    gameLoop(); 
 });
