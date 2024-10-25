@@ -7,7 +7,6 @@ $username = 'root';
 $password = 'root'; 
 $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
 
-
 $scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom DESC LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -20,7 +19,7 @@ $scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom 
 </head>
 <body>
     <div class="container">
-        <h1>Bienvenue dans le RPG !</h1>
+        <h1>Bienvenue dans le FORPG !</h1>
 
         <div class="personalization">
             <h2>Personnalisez votre personnage</h2>
@@ -37,6 +36,7 @@ $scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom 
                     <tr>
                         <th>Nom</th>
                         <th>Vie</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,6 +45,8 @@ $scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom 
                         <td><?php echo htmlspecialchars($score['nom']); ?></td>
                         <td><?php echo htmlspecialchars($score['vie']); ?></td>
                         <td>
+                            <!-- Lien pour jouer avec ce joueur -->
+                            <a href="game.php?nom=<?php echo urlencode($score['nom']); ?>" class="button">Jouer</a>
                             <!-- Bouton de suppression -->
                             <form method="POST" action="delete_user.php" style="display:inline;">
                                 <input type="hidden" name="nom" value="<?php echo htmlspecialchars($score['nom']); ?>">
@@ -60,7 +62,7 @@ $scores = $conn->query("SELECT nom, vie, temps_de_jeu FROM joueurs ORDER BY nom 
         <!-- Bouton pour jouer -->
         <div class="play-button">
             <h2>Prêt à jouer ?</h2>
-            <a href="game.html" class="button">Jouer</a>
+            <a href="game.php" class="button">Jouer</a>
         </div>
     </div>
 </body>

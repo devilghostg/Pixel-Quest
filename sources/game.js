@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const gameArea = document.getElementById('game');
     const player = document.createElement('div');
-    const randomPlayerX = Math.random() * 370;
-    const randomPlayerY = Math.random() * 370;
     player.className = 'player';
-    player.style.left = randomPlayerX + 'px';
-    player.style.top = randomPlayerY + 'px';
+    player.style.left = '180px';
+    player.style.bottom = '0px';
 
     const playerHealthBar = document.createElement('div');
     playerHealthBar.className = 'health-bar';
@@ -13,7 +11,13 @@ document.addEventListener('DOMContentLoaded', function() {
     gameArea.appendChild(player);
 
     const enemies = [];
-    let highScores = JSON.parse(localStorage.getItem('highScores')) || []; // Récupérer les scores existants
+    let playerPosition = { x: 180 };
+    let playerHealth = 100;
+    let enemySpeed = 1;
+    let enemyDirection = 1;
+    let boss;
+    let bossDirection = 1; // Direction du boss (1 pour droite, -1 pour gauche)
+    let bossVisible = false; // Pour savoir si le boss est visible
 
     function createEnemy(x, y) {
         const enemy = document.createElement('div');
@@ -30,13 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     for (let i = 0; i < 5; i++) {
-        createEnemy(Math.random() * 370, Math.random() * 370);
+        createEnemy(Math.random() * 370, Math.random() * 50);
     }
-
-    let playerPosition = { x: randomPlayerX, y: randomPlayerY };
-    let playerHealth = 100;
-    let survivalTime = 0; 
-    let gameOver = false; 
 
     function updateHealthBar(character, health) {
         character.healthBar.style.width = health * 0.3 + 'px';
@@ -44,149 +43,213 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     document.addEventListener('keydown', function(e) {
-        if (gameOver) return; // Ignorer les mouvements si le jeu est terminé
-
-        switch(e.key) {
-            case 'ArrowUp': playerPosition.y -= 10; break;
-            case 'ArrowDown': playerPosition.y += 10; break;
-            case 'ArrowLeft': playerPosition.x -= 10; break;
-            case 'ArrowRight': playerPosition.x += 10; break;
-        }
+        if (e.key === 'ArrowLeft') playerPosition.x -= 10;
+        if (e.key === 'ArrowRight') playerPosition.x += 10;
+        if (e.key === ' ') shootLaser();
 
         playerPosition.x = Math.max(0, Math.min(370, playerPosition.x));
-        playerPosition.y = Math.max(0, Math.min(370, playerPosition.y));
-
         player.style.left = playerPosition.x + 'px';
-        player.style.top = playerPosition.y + 'px';
+        updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
     });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === ' ' && !gameOver) {
-            enemies.forEach(enemy => {
-                const enemyPosition = {
-                    x: parseInt(enemy.element.style.left),
-                    y: parseInt(enemy.element.style.top)
-                };
-
-                const distance = Math.sqrt(Math.pow(playerPosition.x - enemyPosition.x, 2) + Math.pow(playerPosition.y - enemyPosition.y, 2));
-                
-                if (distance < 40) {
-                    enemy.health -= 20;
-                    updateHealthBar(enemy, enemy.health);
-
-                    if (enemy.health <= 0) {
-                        enemy.element.remove();
-                    }
-                }
-            });
-        }
-    });
-
 
     function moveEnemies() {
-        const enemySpeed = 1; 
-    
         enemies.forEach(enemy => {
             const enemyPosition = {
                 x: parseInt(enemy.element.style.left),
                 y: parseInt(enemy.element.style.top)
             };
-    
-            const dx = playerPosition.x - enemyPosition.x;
-            const dy = playerPosition.y - enemyPosition.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-    
-            if (distance > 0) {
-                // Calcule la direction normalisée
-                const moveX = (dx / distance) * enemySpeed; 
-                const moveY = (dy / distance) * enemySpeed; 
-    
-                enemyPosition.x += moveX;
-                enemyPosition.y += moveY;
-    
-                // Met à jour la position de l'ennemi
-                enemy.element.style.left = enemyPosition.x + 'px';
-                enemy.element.style.top = enemyPosition.y + 'px';
-    
-                // Gestion des dégâts infligés au joueur
-                if (distance < 30) {
-                    playerHealth -= 0.4;
-                    updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-                    if (playerHealth <= 0) {
-                        gameOver = true; 
-                        gameOverScreen(); 
-                    }
+
+            enemyPosition.x += enemySpeed * enemyDirection;
+
+            // Vérifier si l'ennemi sort du cadre
+            if (enemyPosition.x <= 0 || enemyPosition.x >= 370) {
+                enemyDirection *= -1;
+                enemies.forEach(e => e.element.style.top = (parseInt(e.element.style.top) + 10) + 'px');
+            }
+
+            enemy.element.style.left = enemyPosition.x + 'px';
+        });
+
+        // Vérifier si le boss doit apparaître
+        enemies.forEach(enemy => {
+            const enemyPosition = {
+                x: parseInt(enemy.element.style.left),
+                y: parseInt(enemy.element.style.top)
+            };
+
+            // Vérifier si l'ennemi dépasse le joueur
+            if (enemyPosition.y > parseInt(player.style.bottom) && !bossVisible) {
+                createBoss();
+                bossVisible = true; // Mettre à jour l'état du boss
+            }
+
+            // Vérifier si l'ennemi sort du cadre
+            if (enemyPosition.x < 0 || enemyPosition.x > 370) {
+                if (!bossVisible) {
+                    createBoss();
+                    bossVisible = true; // Mettre à jour l'état du boss
                 }
             }
         });
     }
-    
+
+    function createBoss() {
+        boss = document.createElement('div');
+        boss.className = 'boss';
+        boss.style.left = '200px';
+        boss.style.top = '10px';
+
+        const bossHealthBar = document.createElement('div');
+        bossHealthBar.className = 'health-bar';
+        boss.appendChild(bossHealthBar);
+
+        gameArea.appendChild(boss);
+        boss.health = 300;
+        updateHealthBar({ healthBar: bossHealthBar }, boss.health);
+        boss.style.display = 'block'; // Afficher le boss
+    }
+
+    function moveBoss() {
+        if (boss) {
+            const bossPositionX = parseInt(boss.style.left);
+            boss.style.left = (bossPositionX + 3 * bossDirection) + 'px';
+
+            // Inverse la direction du boss s'il atteint le bord du jeu
+            if (bossPositionX <= 0 || bossPositionX >= 370) {
+                bossDirection *= -1;
+            }
+        }
+    }
+
+    function shootLaser() {
+        const laser = document.createElement('div');
+        laser.className = 'laser';
+        laser.style.left = playerPosition.x + 'px';
+        laser.style.bottom = '30px';
+        gameArea.appendChild(laser);
+
+        const laserInterval = setInterval(() => {
+            laser.style.top = laser.offsetTop - 5 + 'px';
+
+            enemies.forEach((enemy, index) => {
+                const enemyPosition = {
+                    x: parseInt(enemy.element.style.left),
+                    y: parseInt(enemy.element.style.top)
+                };
+
+                if (
+                    laser.offsetLeft < enemyPosition.x + 30 &&
+                    laser.offsetLeft + 5 > enemyPosition.x &&
+                    laser.offsetTop < enemyPosition.y + 30 &&
+                    laser.offsetTop + 5 > enemyPosition.y
+                ) {
+                    enemy.health -= 20;
+                    updateHealthBar(enemy, enemy.health);
+                    if (enemy.health <= 0) {
+                        enemy.element.remove();
+                        enemies.splice(index, 1);
+                    }
+                    clearInterval(laserInterval);
+                    laser.remove();
+                }
+            });
+
+            if (boss) {
+                const bossPosition = {
+                    x: parseInt(boss.style.left),
+                    y: parseInt(boss.style.top)
+                };
+
+                if (
+                    laser.offsetLeft < bossPosition.x + 60 &&
+                    laser.offsetLeft + 5 > bossPosition.x &&
+                    laser.offsetTop < bossPosition.y + 60 &&
+                    laser.offsetTop + 5 > bossPosition.y
+                ) {
+                    boss.health -= 20;
+                    updateHealthBar({ healthBar: boss.children[0] }, boss.health);
+                    if (boss.health <= 0) {
+                        boss.remove();
+                        boss = null;
+                        displayVictoryModal(); // Affiche la modal de victoire
+                    }
+                    clearInterval(laserInterval);
+                    laser.remove();
+                }
+            }
+
+            if (laser.offsetTop < 0) {
+                clearInterval(laserInterval);
+                laser.remove();
+            }
+        }, 50);
+    }
+
+    function displayVictoryModal() {
+        const modal = document.getElementById("victoryModal");
+        modal.style.display = "block";
+        window.location.replace("index.php");
+        const closeBtn = document.getElementsByClassName("close")[0];
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+    function enemyShootLaser(enemy) {
+        const laser = document.createElement('div');
+        laser.className = 'laser';
+        laser.style.left = parseInt(enemy.element.style.left) + 'px';
+        laser.style.top = parseInt(enemy.element.style.top) + 'px';
+        gameArea.appendChild(laser);
+
+        const laserInterval = setInterval(() => {
+            laser.style.top = laser.offsetTop + 5 + 'px'; // Déplace le laser uniquement vers le bas
+
+            const playerPos = {
+                x: parseInt(player.style.left),
+                y: parseInt(player.style.bottom)
+            };
+
+            if (
+                laser.offsetLeft < playerPos.x + 30 &&
+                laser.offsetLeft + 5 > playerPos.x &&
+                laser.offsetTop < playerPos.y + 30 &&
+                laser.offsetTop + 5 > playerPos.y
+            ) {
+                playerHealth -= 10;
+                updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
+                clearInterval(laserInterval);
+                laser.remove();
+                if (playerHealth <= 0) {
+                    gameOver();
+                }
+            }
+
+            if (laser.offsetTop > gameArea.offsetHeight) {
+                clearInterval(laserInterval);
+                laser.remove();
+            }
+        }, 50);
+    }
+
+    setInterval(() => {
+        enemies.forEach(enemy => enemyShootLaser(enemy));
+        if (boss) enemyShootLaser({ element: boss });
+    }, 2000);
 
     function gameLoop() {
-        if (!gameOver) {
-            moveEnemies();
-            updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-            survivalTime += 0.016; 
-            requestAnimationFrame(gameLoop);
-        }
+        moveEnemies();
+        moveBoss();
+        updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
+        requestAnimationFrame(gameLoop);
     }
-
-    // Fonction pour mettre à jour le tableau des scores
-    function updateScoreboard() {
-        const scoreList = document.getElementById('score-list');
-        scoreList.innerHTML = ''; 
-
-        highScores.sort((a, b) => b.time - a.time); 
-
-        highScores.slice(0, 5).forEach(score => {
-            const li = document.createElement('li');
-            li.textContent = `Joueur: ${score.name}, Temps: ${score.time.toFixed(2)} secondes`;
-            scoreList.appendChild(li);
-        });
-    }
-
-// Écran de fin de jeu
-    function gameOverScreen() {
-        const playerName = prompt("Entrez votre nom :"); 
-        if (playerName) {
-            highScores.push({ name: playerName, time: survivalTime });
-            localStorage.setItem('highScores', JSON.stringify(highScores)); 
-        }
-
-        const gameOverDiv = document.createElement('div');
-        gameOverDiv.className = 'game-over';
-        gameOverDiv.innerHTML = `
-            <h2>Game Over!</h2>
-            <p>Temps de survie: ${survivalTime.toFixed(2)} secondes</p>
-            <button id="restart-btn">Recommencer</button>
-        `;
-        gameArea.appendChild(gameOverDiv);
-
-        // Gestion du bouton de redémarrage
-        document.getElementById('restart-btn').addEventListener('click', function() {
-            location.reload(); 
-        });
-
-        updateScoreboard(); // Met à jour le tableau des scores après la fin du jeu
-    }
-        // Fonction pour envoyer les données de jeu au serveur
-        function sendGameData(time, xp) {
-            fetch('update_game_data.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ time: time, xp: xp }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Données de jeu mises à jour:', data);
-            })
-            .catch((error) => {
-                console.error('Erreur lors de la mise à jour des données de jeu:', error);
-            });
-        }
 
     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-    gameLoop(); 
+    gameLoop();
 });
