@@ -23,7 +23,8 @@ header {
     height: 400px;
     background-color: #dcdcdc;
     position: relative;
-    border: 2px solid #000;
+    border-radius: 15px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 .player, .enemy {
@@ -75,5 +76,18 @@ header {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    z-index: 10; /* Assure que l'écran de fin de jeu est au-dessus des autres éléments */
+    z-index: 10; 
+}
+
+#scoreboard {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+ol{
+    list-style-type: none;
 }

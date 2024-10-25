@@ -12,12 +12,10 @@
     </header>
 
     <main>
-        <!-- Formulaire pour entrer le nom du joueur -->
-        <form action="db.php" method="POST">
-            <input type="text" name="nom" placeholder="Entrez votre nom" required>
-            <button type="submit">Commencer</button>
-        </form>
-
+        <div id="scoreboard">
+            <h2>Tableau des Scores</h2>
+            <ol id="score-list"></ol>
+        </div>
         <!-- Zone de jeu -->
         <div id="game"></div>
     </main>

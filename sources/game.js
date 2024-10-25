@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     gameArea.appendChild(player);
 
     const enemies = [];
+    let highScores = JSON.parse(localStorage.getItem('highScores')) || []; // Récupérer les scores existants
 
     function createEnemy(x, y) {
         const enemy = document.createElement('div');
@@ -58,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.addEventListener('keydown', function(e) {
-        if (e.key === ' ' && !gameOver) { // Attaque uniquement si le jeu n'est pas terminé
+        if (e.key === ' ' && !gameOver) {
             enemies.forEach(enemy => {
                 const enemyPosition = {
                     x: parseInt(enemy.element.style.left),
@@ -80,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function moveEnemies() {
-        const enemySpeed = 0.5; // Ajuste cette valeur pour changer la vitesse des ennemis
+        const enemySpeed = 0.00001; 
     
         enemies.forEach(enemy => {
             const enemyPosition = {
@@ -94,18 +95,19 @@ document.addEventListener('DOMContentLoaded', function() {
     
             if (distance > 0) {
                 // Calcule la direction normalisée
-                const moveX = (dx / distance) * enemySpeed; // Applique la vitesse ici
-                const moveY = (dy / distance) * enemySpeed; // Applique la vitesse ici
+                const moveX = (dx / distance) * enemySpeed; 
+                const moveY = (dy / distance) * enemySpeed; 
     
                 enemyPosition.x += moveX;
                 enemyPosition.y += moveY;
     
+                // Met à jour la position de l'ennemi
                 enemy.element.style.left = enemyPosition.x + 'px';
                 enemy.element.style.top = enemyPosition.y + 'px';
     
                 // Gestion des dégâts infligés au joueur
                 if (distance < 30) {
-                    playerHealth -= 0.5;
+                    playerHealth -= 0.4;
                     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
                     if (playerHealth <= 0) {
                         gameOver = true; // Indiquer que le jeu est terminé
@@ -115,19 +117,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
 
     function gameLoop() {
         if (!gameOver) {
             moveEnemies();
             updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-            survivalTime += 0.016; // Incrémente le temps de survie (en secondes)
+            survivalTime += 0.016; 
             requestAnimationFrame(gameLoop);
         }
     }
-    
 
-    // Écran de fin de jeu
+    // Fonction pour mettre à jour le tableau des scores
+    function updateScoreboard() {
+        const scoreList = document.getElementById('score-list');
+        scoreList.innerHTML = ''; 
+
+        highScores.sort((a, b) => b.time - a.time); 
+
+        highScores.slice(0, 5).forEach(score => {
+            const li = document.createElement('li');
+            li.textContent = `Joueur: ${score.name}, Temps: ${score.time.toFixed(2)} secondes`;
+            scoreList.appendChild(li);
+        });
+    }
+
+// Écran de fin de jeu
     function gameOverScreen() {
+        const playerName = prompt("Entrez votre nom :"); 
+        if (playerName) {
+            highScores.push({ name: playerName, time: survivalTime });
+            localStorage.setItem('highScores', JSON.stringify(highScores)); 
+        }
+
         const gameOverDiv = document.createElement('div');
         gameOverDiv.className = 'game-over';
         gameOverDiv.innerHTML = `
@@ -141,8 +163,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('restart-btn').addEventListener('click', function() {
             location.reload(); 
         });
+
+        updateScoreboard(); // Met à jour le tableau des scores après la fin du jeu
     }
 
     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
-    gameLoop();
+    gameLoop(); // Démarre la boucle de jeu
 });
