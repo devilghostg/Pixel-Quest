@@ -36,10 +36,29 @@ header {
     position: absolute;
 }
 
-.player {
+/* .player {
     background-color: green;
+} */
+.cercle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: inherit;
 }
 
+.carre {
+    width: 30px;
+    height: 30px;
+    background-color: inherit;
+}
+
+.triangle {
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 30px solid inherit;
+}
 .enemy {
     background-color: red;
 }

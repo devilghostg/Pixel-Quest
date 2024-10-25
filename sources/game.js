@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function() {
     player.className = 'player';
     player.style.left = '180px';
     player.style.bottom = '0px';
+    const playerColor = document.getElementById("couleur").value; 
+    const playerShape = document.getElementById("forme").value;
+    
+    // Appliquer la couleur et la tforme
+    player.style.backgroundColor = playerColor;
+    player.classList.add(playerShape);
 
     const playerHealthBar = document.createElement('div');
     playerHealthBar.className = 'health-bar';
@@ -17,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let enemyDirection = 1;
     let boss;
     let bossDirection = 1; // Direction du boss (1 pour droite, -1 pour gauche)
-    let bossVisible = false; // Pour savoir si le boss est visible
 
     function createEnemy(x, y) {
         const enemy = document.createElement('div');
@@ -30,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
         enemy.appendChild(enemyHealthBar);
 
         gameArea.appendChild(enemy);
-        enemies.push({ element: enemy, health: 100, healthBar: enemyHealthBar });
+        enemies.push({ element: enemy, health: 100, healthBar: enemyHealthBar, hasExited: false });
     }
 
     for (let i = 0; i < 5; i++) {
@@ -61,36 +66,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             enemyPosition.x += enemySpeed * enemyDirection;
 
-            // Vérifier si l'ennemi sort du cadre
             if (enemyPosition.x <= 0 || enemyPosition.x >= 370) {
                 enemyDirection *= -1;
                 enemies.forEach(e => e.element.style.top = (parseInt(e.element.style.top) + 10) + 'px');
             }
 
             enemy.element.style.left = enemyPosition.x + 'px';
-        });
 
-        // Vérifier si le boss doit apparaître
-        enemies.forEach(enemy => {
-            const enemyPosition = {
-                x: parseInt(enemy.element.style.left),
-                y: parseInt(enemy.element.style.top)
-            };
-
-            // Vérifier si l'ennemi dépasse le joueur
-            if (enemyPosition.y > parseInt(player.style.bottom) && !bossVisible) {
-                createBoss();
-                bossVisible = true; // Mettre à jour l'état du boss
-            }
-
-            // Vérifier si l'ennemi sort du cadre
-            if (enemyPosition.x < 0 || enemyPosition.x > 370) {
-                if (!bossVisible) {
-                    createBoss();
-                    bossVisible = true; // Mettre à jour l'état du boss
-                }
+            // Vérifier si l'ennemi a quitté l'écran
+            if (parseInt(enemy.element.style.top) > gameArea.offsetHeight) {
+                enemy.hasExited = true; // Marque l'ennemi comme sorti de l'écran
             }
         });
+
+        if (enemies.length === 0 && !boss) {
+            createBoss();
+        }
     }
 
     function createBoss() {
@@ -106,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
         gameArea.appendChild(boss);
         boss.health = 300;
         updateHealthBar({ healthBar: bossHealthBar }, boss.health);
-        boss.style.display = 'block'; // Afficher le boss
     }
 
     function moveBoss() {
@@ -239,7 +229,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setInterval(() => {
-        enemies.forEach(enemy => enemyShootLaser(enemy));
+        enemies.forEach(enemy => {
+            if (enemy.hasExited) { // Vérifiez si l'ennemi a quitté l'écran avant de tirer
+                enemyShootLaser(enemy);
+            }
+        });
         if (boss) enemyShootLaser({ element: boss });
     }, 2000);
 
@@ -252,4 +246,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateHealthBar({ healthBar: playerHealthBar }, playerHealth);
     gameLoop();
+     // Ajoutez des styles CSS pour les formes
+     const styles = document.createElement('style');
+     styles.innerHTML = `
+         .player {
+             width: 30px;
+             height: 30px;
+             position: absolute;
+         }
+         .circle {
+             border-radius: 50%;
+        
+         }
+         .square {
+             /* Pas besoin de styles supplémentaires pour un carré */
+         }
+         .triangle {
+             width: 0;
+             height: 0;
+             border-left: 15px solid transparent;
+             border-right: 15px solid transparent;
+             border-bottom: 30px solid; /* Couleur appliquée dynamiquement */
+             background-color: transparent;
+         }
+     `;
+     document.head.appendChild(styles);
 });

@@ -1,5 +1,4 @@
 <?php
-// Connexion à la base de données
 $host = 'localhost';
 $dbname = 'rpg_game';
 $username = 'root';
@@ -8,13 +7,21 @@ $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nom = $_POST['nom'];
+    $couleur = $_POST['couleur'];
+    $forme = $_POST['forme'];
 
-    // Insérer le joueur dans la base de données
-    $stmt = $conn->prepare("INSERT INTO joueurs (nom, niveau, vie, xp, inventaire) VALUES (?, 1, 100, 0, '')");
-    $stmt->execute([$nom]);
+    try {
 
-    // Redirection vers la page d'accueil
-    header('Location: index.php');
-    exit();
+        $stmt = $conn->prepare("INSERT INTO joueurs (nom, vie, couleur, forme) VALUES (?, 100, ?, ?)");
+        
+        $stmt->execute([$nom, $couleur, $forme]);
+
+
+        header('Location: index.php');
+        exit();
+    } catch (PDOException $e) {
+
+        echo "Erreur lors de l'insertion des données : " . htmlspecialchars($e->getMessage());
+    }
 }
 ?>
