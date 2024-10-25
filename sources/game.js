@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     const gameArea = document.getElementById('game');
     const player = document.createElement('div');
+    const randomPlayerX = Math.random() * 370;
+    const randomPlayerY = Math.random() * 370;
     player.className = 'player';
-    player.style.left = '50px';
-    player.style.top = '50px';
+    player.style.left = randomPlayerX + 'px';
+    player.style.top = randomPlayerY + 'px';
 
     const playerHealthBar = document.createElement('div');
     playerHealthBar.className = 'health-bar';
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         createEnemy(Math.random() * 370, Math.random() * 370);
     }
 
-    let playerPosition = { x: 50, y: 50 };
+    let playerPosition = { x: randomPlayerX, y: randomPlayerY };
     let playerHealth = 100;
     let survivalTime = 0; // Pour suivre le temps de survie
     let gameOver = false; // Pour indiquer que le jeu est terminé
@@ -81,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function moveEnemies() {
-        const enemySpeed = 0.00001; 
+        const enemySpeed = 1; 
     
         enemies.forEach(enemy => {
             const enemyPosition = {

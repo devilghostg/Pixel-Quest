@@ -1,93 +1,51 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
     background-color: #f4f4f4;
-}
-
-header {
-    margin-bottom: 20px;
-}
-
-#game {
-    width: 400px;
-    height: 400px;
-    background-color: #dcdcdc;
-    position: relative;
-    border-radius: 15px;
-    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-}
-
-.player, .enemy {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-}
-
-.player {
-    background-color: green;
-}
-
-.enemy {
-    background-color: red;
-}
-
-.player, .enemy {
-    width: 30px;
-    height: 30px;
-    position: absolute;
-    border: 1px solid black;
-}
-
-.player {
-    background-color: green;
-}
-
-.enemy {
-    background-color: red;
-}
-
-/* Styles pour la barre de vie */
-.health-bar {
-    width: 30px;
-    height: 5px;
-    background-color: green;
-    position: absolute;
-    top: -10px;
-    left: 0;
-}
-
-.game-over {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
+    margin: 0;
     padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    z-index: 10; 
 }
 
-#scoreboard {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px;
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-ol{
-    list-style-type: none;
+
+h1, h2 {
+    text-align: center;
+}
+
+.personalization, .scoreboard, .play-button {
+    margin: 20px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+.button {
+    display: block;
+    background: #3772A6;
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background: #85D932;
 }
