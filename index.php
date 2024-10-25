@@ -32,19 +32,6 @@ if (isset($_GET['message'])): ?>
                 <form id="playerForm" method="POST" action="save_player.php">
                     <input type="text" placeholder="Entrez votre pseudo" id="nom" name="nom" required>
 
-                    <!-- Choix de la couleur -->
-                    <!-- <label for="couleur">Choisissez la couleur de votre personnage :</label>
-                    <input type="color" id="couleur" name="couleur" value="#ff0000"> -->
-
-                    <!-- Choix de la forme -->
-                    <!-- <label for="forme">Choisissez une forme :</label>
-                    <select id="forme" name="forme"> -->
-                        <!-- <option value="cercle">Cercle</option>
-                        <option value="carre">Carré</option>
-                        <option value="triangle">Triangle</option> -->
-                        <!-- Ajoutez d'autres formes si nécessaire -->
-                    <!-- </select> -->
-
                     <button type="submit">Sauvegarder</button>
                 </form>
             </div>

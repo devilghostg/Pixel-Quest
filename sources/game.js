@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     player.className = 'player';
     player.style.left = '180px';
     player.style.bottom = '0px';
-    const playerColor = document.getElementById("couleur").value; 
-    const playerShape = document.getElementById("forme").value;
+    const playerColor = 'red'; 
+    const playerShape = 'circle';
     
-    // Appliquer la couleur et la tforme
+    // Appliquer la couleur et la forme
     player.style.backgroundColor = playerColor;
     player.classList.add(playerShape);
 
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
          }
          .circle {
              border-radius: 50%;
-        
+
          }
          .square {
              /* Pas besoin de styles supplémentaires pour un carré */
